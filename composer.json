@@ -1,0 +1,29 @@
+{
+  "name": "ascentcreative/bibleref",
+  "description": "Library for parsing, storing and searching by bible references",
+  "type": "library",
+  "authors": [
+    {
+      "name": "Ascent Creative",
+      "email": "info@ascent-creative.co.uk"
+    }
+  ],
+  "require": {
+    "laravel/fortify": "^1.7",
+    "matthiasmullie/minify": "^1.3",
+    "kalnoy/nestedset": "^6.0",
+    "doctrine/dbal": "^3.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "AscentCreative\\BibleRef\\": "src"
+    }
+  },
+  "extra": {
+    "laravel": {
+        "providers": [
+            "AscentCreative\\BibleRef\\BibleRefServiceProvider"
+        ]
+    }
+}
+}

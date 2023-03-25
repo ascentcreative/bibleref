@@ -13,15 +13,59 @@ class BibleRef extends Model
     protected $table = 'bible_refs';
     protected $fillable = ['biblerefable_type', 'biblerefable_id', 'biblerefable_key', 'biblerefable_sort', 'ref', 'book_id', 'start_chapter', 'start_verse', 'start_verse_suffix', 'end_chapter', 'end_verse', 'end_verse_suffix', 'ref'];
 
-    public function getSearchUrlAttribute() {
+    protected $appends = ['reference', 'abbreviated'];
+    // protected $visible = ['reference'];
+    protected $hidden = ['id', 'biblerefable_type', 'biblerefable_id', 'biblerefable_key', 'biblerefable_sort', 'created_at', 'updated_at'];
 
-    //    return "/songs?biblerefs[ref]=$this->ref&biblerefs[book]=$this->book&biblerefs[startChapter]=$this->startChapter&biblerefs[startVerse]=$this->startVerse&biblerefs[endChapter]=$this->endChapter&biblerefs[endVerse]=$this->endVerse";
+    protected static function booted() {
+
+        static::addGlobalScope('default_sort', function($q) {
+            $q  ->orderBy('book_id')
+                ->orderBy('start_chapter')
+                ->orderBy('start_verse')
+                ->orderBy('end_chapter')
+                ->orderBy('end_verse');
+        });
 
     }
+
+
 
     public function __toString() {
         $brp = new \AscentCreative\BibleRef\Parser();
         return $brp->makeBibleRefFromArray($this->toArray());
+    }
+
+    public function getReferenceAttribute() {
+        // return '123';
+        $brp = new \AscentCreative\BibleRef\Parser();
+
+        // can't use toArray() as that causes a loop due to be called in "appends"
+        return $brp->makeBibleRefFromArray([
+            'book_id'=>$this->book_id,
+            'start_chapter'=>$this->start_chapter,
+            'start_verse'=>$this->start_verse,
+            'start_verse_suffix'=>$this->start_verse_suffix,
+            'end_chapter'=>$this->end_chapter,
+            'end_verse'=>$this->end_verse,
+            'end_verse_suffix'=>$this->end_verse_suffix,
+        ], false);
+    }
+
+    public function getAbbreviatedAttribute() {
+        // return '123';
+        $brp = new \AscentCreative\BibleRef\Parser();
+
+        // can't use toArray() as that causes a loop due to be called in "appends"
+        return $brp->makeBibleRefFromArray([
+            'book_id'=>$this->book_id,
+            'start_chapter'=>$this->start_chapter,
+            'start_verse'=>$this->start_verse,
+            'start_verse_suffix'=>$this->start_verse_suffix,
+            'end_chapter'=>$this->end_chapter,
+            'end_verse'=>$this->end_verse,
+            'end_verse_suffix'=>$this->end_verse_suffix,
+        ]);
     }
 
 

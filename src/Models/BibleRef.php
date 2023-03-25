@@ -10,8 +10,8 @@ class BibleRef extends Model
 
     use HasFactory;
 
-    protected $table = 'biblerefs';
-    protected $fillable = ['biblerefable_type', 'biblerefable_id', 'biblerefable_key', 'biblerefable_sort', 'book', 'book_note', 'start_chapter', 'start_verse', 'start_verse_suffix', 'end_chapter', 'end_verse', 'end_verse_suffix', 'to_end', 'ref'];
+    protected $table = 'bible_refs';
+    protected $fillable = ['biblerefable_type', 'biblerefable_id', 'biblerefable_key', 'biblerefable_sort', 'ref', 'book_id', 'start_chapter', 'start_verse', 'start_verse_suffix', 'end_chapter', 'end_verse', 'end_verse_suffix', 'ref'];
 
     public function getSearchUrlAttribute() {
 

@@ -243,10 +243,38 @@ class Parser {
             return $this->getBookName($num);
             
         }
+
+
+        function parseBibleRef($ref) {
         
+            // preg_match('/(?P<book>[1-4]?\s?[a-zA-Z\s]*)\s(?P<startChapter>[0-9]*)(?P<booknote>[a-zA-Z]*)?:?(?P<isAll>all)?(?P<startVerse>[0-9]*)?(?P<startPortion>[ab]\b)?[ \-=]?(?P<toEnd>end)?(?P<endChapter>[0-9]*)?:?(?P<endVerse>[0-9]*)?(?P<endPortion>[ab]\b)?(?P<freetext>[()a-zA-Z ]*)?/', $ref, $matches);
+            preg_match('/(?P<book>[1-4]?\s?[a-zA-Z\s]*)\s(?P<startChapter>[0-9]*)(:?(?P<startVerse>[0-9]*))?(?P<startPortion>[ab]\b)?[ \-=]?((?P<endChapter>[0-9]*):)?(?P<endVerse>[0-9]*)?(?P<endPortion>[ab]\b)?(?P<freetext>[()a-zA-Z ]*)?/', $ref, $matches);
+            //print_r($matches);
+            dump($ref);
+          
+            $matches = array_filter($matches);
+            //   dd($matches);
+            
+            $parsed = array();
+            $parsed['ref'] = $ref;
+            $parsed['book_id'] = $this->getBookNumber($matches['book']);
+            $parsed['book_note'] = $matches['booknote'] ?? '';
+            $parsed['start_chapter'] = $matches['startChapter'] ?? 0;
+            $parsed['end_chapter'] = $matches['endChapter'] ?? 999;
+            $parsed['start_verse'] = $matches['startVerse'] ?? 0;
+            $parsed['start_verse_suffix'] = $matches['startPortion'] ?? '';
+            $parsed['end_verse'] = $matches['endVerse'] ?? 999;
+            $parsed['end_verse_suffix'] = $matches['endPortion'] ?? '';
+            $parsed['note'] = $matches['freetext'] ?? ''; 
+
+            // dd($parsed);
+
+            return $parsed;
+
+        }
         
     
-        function parseBibleRef($ref) {	
+        function oldParseBibleRef($ref) {	
 
             $ref = str_replace(": ", ":", $ref);
             $ref = str_replace(" :", ":", $ref);

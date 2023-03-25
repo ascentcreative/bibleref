@@ -31,7 +31,7 @@ class Parser {
             $this->aryBooks[] = array('Nehemiah', 'Neh', 'nehemiah', 'Ne');
             $this->aryBooks[] = array('Esther', 'Esth', 'esther', 'Es');
             $this->aryBooks[] = array('Job', 'Job', 'job', 'Jb');
-            $this->aryBooks[] = array('Psalm', 'Psalm', 'psalms', 'Pslm', 'Ps', 'Psalms', 'Psa', 'Psm', 'Pss', 'Psalms');
+            $this->aryBooks[] = array('Psalm', 'Ps', 'Psalm', 'psalms', 'Pslm', 'Ps', 'Psalms', 'Psa', 'Psm', 'Pss', 'Psalms');
             $this->aryBooks[] = array('Proverbs', 'Prov', 'proverbs', 'Pr', 'Prv');
             $this->aryBooks[] = array('Ecclesiastes', 'Eccles', 'ecclesiastes', 'Ec', 'Qoh', 'Qoheleth');
             $this->aryBooks[] = array('Song of Songs', 'Song', 'song-of-songs', 'So', 'Canticle of Canticles', 'Canticles', 'Song of Solomon', 'SOS');
@@ -62,7 +62,7 @@ class Parser {
                 $this->aryBooks[] = array('Tobit', 'Tob', 'tobit', 'Tb');
                 $this->aryBooks[] = array('Judith', 'Jth', 'judith', 'Jdt');
                 $this->aryBooks[] = array('Wisdom of Solomon', 'Ws', 'wisdom-of-solomon', 'Wisdom', 'Wisd of Sol');
-                $this->aryBooks[] = array('Ecclesiasticus', 'Ecclus', 'ecclesiasticus', 'Sirach', 'Sir');
+                $this->aryBooks[] = array('Sirach', 'Sir', 'Ecclesiasticus', 'Ecclus', 'ecclesiasticus');
                 $this->aryBooks[] = array('Baruch', 'Bar', 'baruch');
                 $this->aryBooks[] = array('Letter of Jeremiah', 'Ljr', 'letter-of-jeremiah');
                 $this->aryBooks[] = array('Prayer of Azariah', 'Aza', 'prayer-of-azaria');
@@ -131,29 +131,29 @@ class Parser {
                 $ary = (array) $ary;
             }
 
-            $bookName = $this->aryBooks[$ary['book']][$abbrev?1:0];
+            $bookName = $this->aryBooks[$ary['book_id']][$abbrev?1:0];
             
-            if ($bookName == "Psalms" && $ary['startChapter']) {
+            if ($bookName == "Psalms" && $ary['start_chapter']) {
                 $bookName = "Psalm";
             }
             
             //$out = $bookName . ' ' . $sc;
-            $out = ($incBook?($this->aryBooks[$ary['book']][$abbrev?1:0] . ' '):'') . ($incChap && ($ary['startChapter']>0)?$ary['startChapter']:'');
+            $out = ($incBook?($this->aryBooks[$ary['book_id']][$abbrev?1:0] . ' '):'') . ($incChap && ($ary['start_chapter']>0)?$ary['start_chapter']:'');
             
-            if ($ary['startVerse'] > 0) {
+            if ($ary['start_verse'] > 0) {
                 //$out .= ":" . $sv;
-                $out .= ($incChap?":":'') . $ary['startVerse'] . (isset($ary['startVerseSuffix'])?$ary['startVerseSuffix']:'');
+                $out .= ($incChap?":":'') . $ary['start_verse'] . (isset($ary['start_verse_suffix'])?$ary['start_verse_suffix']:'');
             }
             
-            if ($ary['endChapter'] > $ary['startChapter']) {
-                $out .= '-' . $ary['endChapter'] . ':' . $ary['endVerse'];
+            if ($ary['end_chapter'] > $ary['start_chapter'] && $ary['end_chapter'] != 999) {
+                $out .= '-' . $ary['end_chapter'] . ':' . $ary['end_verse'];
             } else {
-                if ($ary['endVerse'] > $ary['startVerse'] && $ary['endVerse'] != 999) {
-                    $out .= '-' . $ary['endVerse'];
+                if ($ary['end_verse'] > $ary['start_verse'] && $ary['end_verse'] != 999) {
+                    $out .= '-' . $ary['end_verse'];
                 }
             }
             
-            $out .= (isset($ary['endVerseSuffix'])?$ary['endVerseSuffix']:'');
+            $out .= (isset($ary['end_verse_suffix'])?$ary['end_verse_suffix']:'');
             
             return trim($out);
             
@@ -250,7 +250,7 @@ class Parser {
             // preg_match('/(?P<book>[1-4]?\s?[a-zA-Z\s]*)\s(?P<startChapter>[0-9]*)(?P<booknote>[a-zA-Z]*)?:?(?P<isAll>all)?(?P<startVerse>[0-9]*)?(?P<startPortion>[ab]\b)?[ \-=]?(?P<toEnd>end)?(?P<endChapter>[0-9]*)?:?(?P<endVerse>[0-9]*)?(?P<endPortion>[ab]\b)?(?P<freetext>[()a-zA-Z ]*)?/', $ref, $matches);
             preg_match('/(?P<book>[1-4]?\s?[a-zA-Z\s]*)\s(?P<startChapter>[0-9]*)(:?(?P<startVerse>[0-9]*))?(?P<startPortion>[ab]\b)?[ \-=]?((?P<endChapter>[0-9]*):)?(?P<endVerse>[0-9]*)?(?P<endPortion>[ab]\b)?(?P<freetext>[()a-zA-Z ]*)?/', $ref, $matches);
             //print_r($matches);
-            dump($ref);
+            // dump($ref);
           
             $matches = array_filter($matches);
             //   dd($matches);
@@ -260,7 +260,7 @@ class Parser {
             $parsed['book_id'] = $this->getBookNumber($matches['book']);
             $parsed['book_note'] = $matches['booknote'] ?? '';
             $parsed['start_chapter'] = $matches['startChapter'] ?? 0;
-            $parsed['end_chapter'] = $matches['endChapter'] ?? 999;
+            $parsed['end_chapter'] = $matches['endChapter'] ?? $matches['startChapter'];
             $parsed['start_verse'] = $matches['startVerse'] ?? 0;
             $parsed['start_verse_suffix'] = $matches['startPortion'] ?? '';
             $parsed['end_verse'] = $matches['endVerse'] ?? 999;
@@ -365,10 +365,10 @@ class Parser {
         
             
             $parsed['book'] = $bk;
-            $parsed['startChapter'] = $sc;
-            $parsed['startVerse'] = $sv;
-            $parsed['endChapter'] = $ec;
-            $parsed['endVerse'] = $ev;
+            $parsed['start_chapter'] = $sc;
+            $parsed['start_verse'] = $sv;
+            $parsed['end_chapter'] = $ec;
+            $parsed['end_verse'] = $ev;
             
             
             
@@ -376,14 +376,14 @@ class Parser {
                 
                 $svlast = substr($sv,-1);
                 if (!is_numeric($svlast)) {
-                    $parsed['startVerse'] = substr($sv,0,-1);
-                    $parsed['startVerseSuffix'] = $svlast;
+                    $parsed['start_verse'] = substr($sv,0,-1);
+                    $parsed['start_verse_suffix'] = $svlast;
                 }
                 
                 $evlast = substr($ev,-1);
                 if (!is_numeric($evlast)) {
-                    $parsed['endVerse'] = substr($ev,0,-1);
-                    $parsed['endVerseSuffix'] = $evlast;
+                    $parsed['end_verse'] = substr($ev,0,-1);
+                    $parsed['end_verse_suffix'] = $evlast;
                 }
                 
             }

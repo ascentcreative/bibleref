@@ -11,7 +11,7 @@ class BibleRef extends Model
     use HasFactory;
 
     protected $table = 'bible_refs';
-    protected $fillable = ['biblerefable_type', 'biblerefable_id', 'biblerefable_key', 'biblerefable_sort', 'ref', 'book_id', 'start_chapter', 'start_verse', 'start_verse_suffix', 'end_chapter', 'end_verse', 'end_verse_suffix', 'ref'];
+    protected $fillable = ['biblerefable_type', 'biblerefable_id', 'biblerefable_key', 'biblerefable_sort', 'ref', 'book_id', 'start_chapter', 'start_verse', 'start_verse_suffix', 'end_chapter', 'end_verse', 'end_verse_suffix', 'ref', 'start_key', 'end_key'];
 
     protected $appends = ['reference', 'abbreviated'];
     // protected $visible = ['reference'];
@@ -25,6 +25,18 @@ class BibleRef extends Model
                 ->orderBy('start_verse')
                 ->orderBy('end_chapter')
                 ->orderBy('end_verse');
+        });
+
+        static::saving(function($model) {
+
+            $sc = str_pad ( $model->start_chapter , 3 , "0", STR_PAD_LEFT ); 
+            $sv = str_pad ( $model->start_verse , 3 , "0", STR_PAD_LEFT );
+            $ec = str_pad ( $model->end_chapter , 3 , "0", STR_PAD_LEFT ); 
+            $ev = str_pad ( $model->end_verse , 3 , "0", STR_PAD_LEFT );
+
+            $model->start_key = $sc . ":" . $sv;
+            $model->end_key = $ec . ":" . $ev;
+
         });
 
     }

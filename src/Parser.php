@@ -267,6 +267,17 @@ class Parser {
             $parsed['end_verse_suffix'] = $matches['endPortion'] ?? '';
             $parsed['note'] = $matches['freetext'] ?? ''; 
 
+
+            $sc = str_pad ( $parsed['start_chapter'] , 3 , "0", STR_PAD_LEFT ); 
+            $sv = str_pad ( $parsed['start_verse'] , 3 , "0", STR_PAD_LEFT );
+            $ec = str_pad ( $parsed['end_chapter'] , 3 , "0", STR_PAD_LEFT ); 
+            $ev = str_pad ( $parsed['end_verse'] , 3 , "0", STR_PAD_LEFT );
+
+            $parsed['start_key'] = $sc . ":" . $sv;
+            $parsed['end_key'] = $ec . ":" . $ev;
+
+            
+
             // dd($parsed);
 
             return $parsed;

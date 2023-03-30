@@ -136,6 +136,12 @@ class Parser {
             if ($bookName == "Psalms" && $ary['start_chapter']) {
                 $bookName = "Psalm";
             }
+
+            $isSingleChapterBook = ($this->aryChapters[$ary['book_id']] == 1);
+
+            if($isSingleChapterBook) {
+                $incChap = false;
+            }
             
             //$out = $bookName . ' ' . $sc;
             $out = ($incBook?($this->aryBooks[$ary['book_id']][$abbrev?1:0] . ' '):'') . ($incChap && ($ary['start_chapter']>0)?$ary['start_chapter']:'');
@@ -246,14 +252,27 @@ class Parser {
 
 
         function parseBibleRef($ref) {
-        
-            // preg_match('/(?P<book>[1-4]?\s?[a-zA-Z\s]*)\s(?P<startChapter>[0-9]*)(?P<booknote>[a-zA-Z]*)?:?(?P<isAll>all)?(?P<startVerse>[0-9]*)?(?P<startPortion>[ab]\b)?[ \-=]?(?P<toEnd>end)?(?P<endChapter>[0-9]*)?:?(?P<endVerse>[0-9]*)?(?P<endPortion>[ab]\b)?(?P<freetext>[()a-zA-Z ]*)?/', $ref, $matches);
-            preg_match('/(?P<book>[1-4]?\s?[a-zA-Z\s]*)\s(?P<startChapter>[0-9]*)(:?(?P<startVerse>[0-9]*))?(?P<startPortion>[ab]\b)?[ \-=]?((?P<endChapter>[0-9]*):)?(?P<endVerse>[0-9]*)?(?P<endPortion>[ab]\b)?(?P<freetext>[()a-zA-Z ]*)?/', $ref, $matches);
-            //print_r($matches);
-            // dump($ref);
-          
+            
+            // struggling too get em-dashes to be picked up by PHP regex
+            // (pattern works fine on regex101)
+            // so, we'll just swap them for hyphens:
+            $ref = str_replace('—', '-', $ref);
+
+            preg_match('/(?P<book>[1-4]?\s?[a-zA-Z\s]*)\s(?P<startChapter>[0-9]*)(:?(?P<startVerse>[0-9]*))?(?P<startPortion>[abc]\b)?[ \-\—\—=]?((?P<endChapter>[0-9]*):)?(?P<endVerse>[0-9]*)?(?P<endPortion>[abc]\b)?(?P<freetext>[()a-zA-Z ]*)?/', $ref, $matches);
+  
             $matches = array_filter($matches);
-            //   dd($matches);
+           
+            //handle single-chapter books (Philemon, Jude etc):
+            // parser will have detected verses as chapters, so adjust the array
+            $isSingleChapterBook = ($this->aryChapters[ $this->getBookNumber($matches['book']) ] == 1);
+            if($isSingleChapterBook) {
+                $matches['startVerse'] = $matches['startChapter'];
+                $matches['startChapter'] = 1;
+                if(isset($matches['endChapter'])) {
+                    $matches['endVerse'] = $matches['endChapter'];
+                    $matches['endChapter'] = 1;
+                }  
+            }
             
             $parsed = array();
             $parsed['ref'] = $ref;
@@ -275,10 +294,6 @@ class Parser {
 
             $parsed['start_key'] = $sc . ":" . $sv;
             $parsed['end_key'] = $ec . ":" . $ev;
-
-            
-
-            // dd($parsed);
 
             return $parsed;
 

@@ -34,8 +34,10 @@ return new class extends Migration
             $table->string('start_key', 7)->index();
             $table->string('end_key', 7)->index();
 
+            $table->index(['biblerefable_type', 'biblerefable_id', 'biblerefable_key', 'book_id', 'start_key', 'end_key'], 'biblerefable_full');
             $table->index(['biblerefable_type', 'biblerefable_id', 'biblerefable_key'], 'biblerefable');
-            $table->index(['book_id', 'start_key', 'end_key']);
+            $table->index(['book_id', 'start_key', 'end_key'], 'reference');
+
 
             $table->timestamps();
         });

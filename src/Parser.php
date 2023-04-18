@@ -282,7 +282,7 @@ class Parser {
             $parsed['end_chapter'] = $matches['endChapter'] ?? $matches['startChapter'];
             $parsed['start_verse'] = $matches['startVerse'] ?? 0;
             $parsed['start_verse_suffix'] = $matches['startPortion'] ?? '';
-            $parsed['end_verse'] = $matches['endVerse'] ?? 999;
+            $parsed['end_verse'] = $matches['endVerse'] ?? ($matches['startVerse'] ?? 999);
             $parsed['end_verse_suffix'] = $matches['endPortion'] ?? '';
             $parsed['note'] = $matches['freetext'] ?? ''; 
 

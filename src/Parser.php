@@ -205,7 +205,7 @@ class Parser {
             while (!$match && $i < sizeOf($this->aryBooks)) {
 
                $match = array_search(
-                            strtolower($bkName), 
+                            trim(strtolower($bkName)), 
                             array_map('strtolower', $this->aryBooks[$i])
                         ) !== false;
 
@@ -258,15 +258,16 @@ class Parser {
             // so, we'll just swap them for hyphens:
             $ref = str_replace('—', '-', $ref);
 
-            preg_match('/(?P<book>[1-4]?\s?[a-zA-Z\s]*)\s(?P<startChapter>[0-9]*)(:?(?P<startVerse>[0-9]*))?(?P<startPortion>[abc]\b)?[ \-\—\—=]?((?P<endChapter>[0-9]*):)?(?P<endVerse>[0-9]*)?(?P<endPortion>[abc]\b)?(?P<freetext>[()a-zA-Z ]*)?/', $ref, $matches);
+            preg_match('/(?P<book>[1-4]?\s?[a-zA-Z\s]*)\s?(?P<startChapter>[0-9]*)?(:?(?P<startVerse>[0-9]*))?(?P<startPortion>[abc]\b)?[ \-\—\—=]?((?P<endChapter>[0-9]*):)?(?P<endVerse>[0-9]*)?(?P<endPortion>[abc]\b)?(?P<freetext>[()a-zA-Z ]*)?/', $ref, $matches);
   
             $matches = array_filter($matches);
-           
+        
+
             //handle single-chapter books (Philemon, Jude etc):
             // parser will have detected verses as chapters, so adjust the array
             $isSingleChapterBook = ($this->aryChapters[ $this->getBookNumber($matches['book']) ] == 1);
             if($isSingleChapterBook) {
-                $matches['startVerse'] = $matches['startChapter'];
+                $matches['startVerse'] = $matches['startChapter'] ?? 1;
                 $matches['startChapter'] = 1;
                 if(isset($matches['endChapter'])) {
                     $matches['endVerse'] = $matches['endChapter'];
@@ -276,10 +277,10 @@ class Parser {
             
             $parsed = array();
             $parsed['ref'] = $ref;
-            $parsed['book_id'] = $this->getBookNumber($matches['book']);
+            $parsed['book_id'] = $this->getBookNumber($matches['book'] ?? '');
             $parsed['book_note'] = $matches['booknote'] ?? '';
             $parsed['start_chapter'] = $matches['startChapter'] ?? 0;
-            $parsed['end_chapter'] = $matches['endChapter'] ?? $matches['startChapter'];
+            $parsed['end_chapter'] = $matches['endChapter'] ?? ($matches['startChapter'] ?? 999);
             $parsed['start_verse'] = $matches['startVerse'] ?? 0;
             $parsed['start_verse_suffix'] = $matches['startPortion'] ?? '';
             $parsed['end_verse'] = $matches['endVerse'] ?? ($matches['startVerse'] ?? 999);

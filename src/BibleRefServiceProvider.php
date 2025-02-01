@@ -30,6 +30,8 @@ class BibleRefServiceProvider extends ServiceProvider
 
     $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
+    $this->bootPublishes();
+
     $this->bootComponents();
 
     packageAssets()->addStylesheet('/vendor/ascent/bibleref/dist/css/ascent-bibleref-bundle.css');

@@ -2,7 +2,7 @@
 
 namespace AscentCreative\BibleRef;
 
-use AscentCreative\BibleRef\Exceptions\ParserException;
+use AscentCreative\BibleRef\Exceptions\BibleReferenceParserException;
 
 class Parser {
 
@@ -152,7 +152,10 @@ class Parser {
             }
             
             if ($ary['end_chapter'] > $ary['start_chapter'] && $ary['end_chapter'] != 999) {
-                $out .= '-' . $ary['end_chapter'] . ':' . $ary['end_verse'];
+                $out .= '-' . $ary['end_chapter'];
+                if($ary['end_verse'] != 999) {
+                    $out .= ':' . $ary['end_verse'];
+                }
             } else {
                 if ($ary['end_verse'] > $ary['start_verse'] && $ary['end_verse'] != 999) {
                     $out .= '-' . $ary['end_verse'];
@@ -258,9 +261,20 @@ class Parser {
             // so, we'll just swap them for hyphens:
             $ref = str_replace('—', '-', $ref);
 
-            preg_match('/(?P<book>[1-4]?\s?[a-zA-Z\s]*)\s?(?P<startChapter>[0-9]*)?(:?(?P<startVerse>[0-9]*))?(?P<startPortion>[abc]\b)?[ \-\—\—=]?((?P<endChapter>[0-9]*):)?(?P<endVerse>[0-9]*)?(?P<endPortion>[abc]\b)?(?P<freetext>[()a-zA-Z ]*)?/', $ref, $matches);
+            
+
+            // preg_match('/(?P<book>[1-4]?\s?[a-zA-Z\s]*)\s?(?P<startChapter>[0-9]*)?([:v(vv)]?(?P<startVerse>[0-9]*))?(?P<startPortion>[abc]\b)?[ \-\—\—=]?((?P<endChapter>[0-9]*):)?(?P<endVerse>[0-9]*)?(?P<endPortion>[abc]\b)?(?P<freetext>[()a-zA-Z ]*)?/', $ref, $matches);
+
+            // added "v, vv, vs"
+            preg_match('/(?P<book>[1-4]?\s?[a-zA-Z\s]*)\s?(?P<startChapter>[0-9]*)?(\s?:?[vs]{0,2}+\s?)(?P<startVerse>[0-9]*)?(?P<startPortion>[abc]\b)?[ \-\—\—=]?(?P<endChapter>[0-9]*)?(\s?:?[vs]{0,2}+\s?)(?P<endVerse>[0-9]*)?(?P<endPortion>[abc]\b)?(?P<freetext>[()a-zA-Z ]*)?/', $ref, $matches);
   
             $matches = array_filter($matches);
+
+            $booknum = $this->getBookNumber($matches['book']);
+
+            if($booknum == -1) {
+                throw new BibleReferenceParserException('Book "' . $matches['book'] . '" not recognised');
+            }
         
 
             //handle single-chapter books (Philemon, Jude etc):
@@ -276,7 +290,8 @@ class Parser {
             }
             
             $parsed = array();
-            $parsed['ref'] = $ref;
+            // $parsed['ref'] = $ref;
+        
             $parsed['book_id'] = $this->getBookNumber($matches['book'] ?? '');
             $parsed['book_note'] = $matches['booknote'] ?? '';
             $parsed['start_chapter'] = $matches['startChapter'] ?? 0;
@@ -295,6 +310,8 @@ class Parser {
 
             $parsed['start_key'] = $sc . ":" . $sv;
             $parsed['end_key'] = $ec . ":" . $ev;
+
+            $parsed['ref'] = $this->makeBibleRefFromArray($parsed);
 
             return $parsed;
 

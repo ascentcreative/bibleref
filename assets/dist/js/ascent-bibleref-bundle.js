@@ -73,8 +73,11 @@ var BibleRefTokens = {
     var idx = this.element.find('.rt_token').length;
     token = '<div class="rt_token">';
     token += data['ref'];
+    console.log(data);
     for (item in data) {
-      token += '<input type="hidden" class="token-label" name="' + this.options.fieldName + '[' + idx + '][' + item + ']" value="' + data[item] + '">';
+      if (data[item] != null) {
+        token += '<input type="hidden" class="token-label" name="' + this.options.fieldName + '[' + idx + '][' + item + ']" value="' + data[item] + '">';
+      }
     }
     token += '<A href="#delete-token" class="bi-x-square-fill text-danger rt_remove"></A>';
     token += '</div>';

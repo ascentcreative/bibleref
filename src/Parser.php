@@ -266,7 +266,7 @@ class Parser {
             // preg_match('/(?P<book>[1-4]?\s?[a-zA-Z\s]*)\s?(?P<startChapter>[0-9]*)?([:v(vv)]?(?P<startVerse>[0-9]*))?(?P<startPortion>[abc]\b)?[ \-\—\—=]?((?P<endChapter>[0-9]*):)?(?P<endVerse>[0-9]*)?(?P<endPortion>[abc]\b)?(?P<freetext>[()a-zA-Z ]*)?/', $ref, $matches);
 
             // added "v, vv, vs"
-            preg_match('/(?P<book>[1-4]?\s?[a-zA-Z\s]*)\s?(?P<startChapter>[0-9]*)?(\s?:?[vs]{0,2}+\s?)(?P<startVerse>[0-9]*)?(?P<startPortion>[abc]\b)?[ \-\—\—=]?(?P<endChapter>[0-9]*)?(\s?:?[vs]{0,2}+\s?)(?P<endVerse>[0-9]*)?(?P<endPortion>[abc]\b)?(?P<freetext>[()a-zA-Z ]*)?/', $ref, $matches);
+            preg_match('/(?P<book>[1-4]?\s?[a-zA-Z\s]*)\s?(?P<startChapter>[0-9]*)?(\s?:?[vs]{0,2}+\s?)(?P<startVerse>[0-9]*)?(?P<startPortion>[abc]\b)?[ \-\—\—=]?((?P<endChapter>[0-9]*)[:v])?(?P<endVerse>[0-9]*)?(?P<endPortion>[abc]\b)?(?P<freetext>[()a-zA-Z ]*)?/', $ref, $matches);
   
             $matches = array_filter($matches);
 

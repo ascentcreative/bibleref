@@ -8,5 +8,7 @@ Route::middleware('web')->group( function() {
         dump($parser->parseBibleRef($ref));
     });
 
+    Route::get('/bibleref/parse/{term}', [AscentCreative\BibleRef\Controllers\BibleRefController::class, 'parse']);
+
 }); //->middleware('web');
 

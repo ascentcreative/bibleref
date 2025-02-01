@@ -1,6 +1,6 @@
 <?php
 
-namespace AscentCreative\CMS\Bible\Exceptions;
+namespace AscentCreative\BibleRef\Exceptions;
 
 use Exception;
 

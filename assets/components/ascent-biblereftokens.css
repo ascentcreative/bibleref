@@ -1,0 +1,16 @@
+.biblereftokens.form-control {
+    height:auto;
+}
+
+
+.biblereftokens {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.biblereftokens input.item-entry {
+    display: inline-block;
+    /* width: auto; */
+}
+

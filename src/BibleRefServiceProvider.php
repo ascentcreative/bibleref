@@ -30,15 +30,21 @@ class BibleRefServiceProvider extends ServiceProvider
 
     $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
+    $this->bootComponents();
+
+    packageAssets()->addStylesheet('/vendor/ascent/bibleref/dist/css/ascent-bibleref-bundle.css');
+    packageAssets()->addScript('/vendor/ascent/bibleref/dist/js/ascent-bibleref-bundle.js');
     
   }
 
   
 
-  // register the components
-  public function bootComponents() {
+    // register the components
+    public function bootComponents() {
 
-  }
+        Blade::component('bibleref-fields-biblereftokens', 'AscentCreative\BibleRef\Components\Fields\BibleRefTokens');
+
+    }
 
 
 
